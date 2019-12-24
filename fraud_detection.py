@@ -7,7 +7,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
-
 # Importing the dataset
 dataset = pd.read_csv(r'C:\Users\firoj\Downloads\P16-Self-Organizing-Maps\Self_Organizing_Maps\Credit_Card_Applications.csv')
 
