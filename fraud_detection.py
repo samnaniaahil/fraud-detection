@@ -1,6 +1,6 @@
 # Fraud Detection in Banks with SOMs
 
-# Part 1 - Identify frauds with a Self-Organizing Map (SOM)
+# Part 1 - Creating a list of frauds with a Self-Organizing Map (SOM)
 
 # Importing the libraries
 import numpy as np
@@ -8,8 +8,9 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-# Importing the dataset
+# Import the dataset
 dataset = pd.read_csv(r'C:\Users\firoj\Downloads\P16-Self-Organizing-Maps\Self_Organizing_Maps\Credit_Card_Applications.csv')
+
 # Seperate dataset into dependent and independent variable(s)
 X = dataset.iloc[:, :-1].values
 y = dataset.iloc[:, -1].values
@@ -20,7 +21,7 @@ from sklearn.preprocessing import MinMaxScaler
 sc = MinMaxScaler(feature_range = (0, 1))
 X = sc.fit_transform(X)
 
-# Training the SOM
+# Train the SOM
 from minisom import MiniSom
 # Initialize parameters 
 som = MiniSom(x = 10, y = 10, input_len = 15, sigma = 1.0, learning_rate = 0.5)
@@ -33,7 +34,7 @@ som.train_random(data = X, num_iteration = 100)
 from pylab import bone, pcolor, colorbar, plot, show
 # Intialize window for SOM
 bone()
-# Rerturn transposed (flipped over diagonal) matrix for all mean inter-neuron distances (MID)
+# Return transposed (flipped over diagonal) matrix for all mean inter-neuron distances (MID)
 pcolor(som.distance_map().T)
 # Create legend to determine what darkness of colour corresponds with a low MID or a high MID
 colorbar()
@@ -47,7 +48,7 @@ for i, x in enumerate(X):
     plot(w[0] + 0.5, w[1] + 0.5, markers[y[i]], markeredgecolor = colors[y[i]], markerfacecolor = 'None', markersize = 10, markeredgewidth = 2)
 show()
 
-# Get a list of customers with fradulent activity
+# Get a list of frauds
 mappings = som.win_map(X)
 # Get coordinates of outlying winning nodes
 frauds = np.concatenate((mappings[(5,3)], mappings[(8,3)]), axis = 0)
@@ -55,7 +56,7 @@ frauds = np.concatenate((mappings[(5,3)], mappings[(8,3)]), axis = 0)
 frauds = sc.inverse_transform(frauds)
 
 
-# Part 2 - Creating matrix of features (independent varibles) and creating dependent variable
+# Part 2 - Creating matrix of features and dependent variable
 
 # Creating matrix of features 
 customers = dataset.iloc[:, 1:].values
@@ -74,7 +75,7 @@ sc = StandardScaler()
 customers = sc.fit_transform(customers)
 
 
-# Part 3 - Making an ANN
+# Part 3 - Creating an ANN to create a ranked list of determine probability of each customer having committed fraud
 
 # Importing Keras libraries and packages
 import keras
@@ -102,11 +103,11 @@ classifier.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = [
 # Fitting the ANN to the training set
 classifier.fit(customers, is_fraud, batch_size = 1, nb_epoch = 2)
 
-# Predict each probabilty of each customer bieng a fraud
+# Predict each probabilty of each customer of having committed fraud
 y_pred = classifier.predict(customers)
 
 # Create 2-d array of of customer IDs and predicted probabilites
 y_pred = np.concatenate((dataset.iloc[:, 0:1].values, y_pred), axis = 1)
 
-# Sort customers from least to most likely to be a fraud
+# Sort customers from least to most likely of having committed fraud
 y_pred = y_pred[y_pred[:, 1].argsort()]
