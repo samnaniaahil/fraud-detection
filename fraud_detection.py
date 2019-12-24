@@ -1,4 +1,4 @@
-# Fraud Detection in Banks with SOMs and ANNS
+# Fraud Detection at Banks with SOMs and ANNS
 
 # Part 1 - Creating a list of frauds with a Self-Organizing Map (SOM)
 
